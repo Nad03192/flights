@@ -34,3 +34,4 @@ Route::get('flightslist', [AuthController::class, 'listFlights'])->name('flights
 Route::post('flights/{id}/book', [AuthController::class, 'bookFlight'])->name('flights.book');
 Route::delete('/flights/{flight}/passengers/{passenger}', [FlightController::class, 'removePassenger'])->name('flights.passengers.remove');
 Route::get('/passenger/flights', [AuthController::class, 'showFlightsForPassenger'])->name('passenger.flights');
+
