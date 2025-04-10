@@ -39,11 +39,6 @@ class AuthController extends Controller
     }
     
 
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
     public function login(Request $request)
     {
         $request->validate([
@@ -51,20 +46,17 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
     
-        // Find the passenger by email
         $passenger = Passenger::where('email', $request->email)->first();
     
         if ($passenger && Hash::check($request->password, $passenger->password)) {
-            // Check if the passenger has the admin role
+          
             $isAdmin = $passenger->roles()->where('name', 'admin')->exists();
     
-            // If admin, redirect to the admin flight index page
             if ($isAdmin) {
                 session(['passenger_id' => $passenger->id]);
-                return redirect()->route('flights.index');  // Change to flights.index for admin
+                return redirect()->route('flights.index'); 
             }
     
-            // For non-admin users, proceed to flights list
             session(['passenger_id' => $passenger->id]);
             return redirect()->route('flights.list');
         }
@@ -127,6 +119,13 @@ public function showFlightsForPassenger()
     return view('flights.passenger_flights', compact('flights', 'passenger'));
 }
 
+public function showLoginForm()
+{
+    if (session('passenger_id')) {
+        return redirect()->route('flights.list'); 
+    }
+    return view('auth.login');
+}
 
 }
 
