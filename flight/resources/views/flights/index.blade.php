@@ -1,5 +1,3 @@
-
-
 <h2>Flights</h2>
 
 <form method="GET">
@@ -7,9 +5,17 @@
     <button type="submit">Search</button>
 </form>
 
+<form method="GET" style="margin-top: 10px;">
+    <label for="per_page">Items per page:</label>
+    <input type="number" name="per_page" id="per_page" value="{{ request('per_page', 10) }}" min="1">
+    <button type="submit">Set</button>
+</form>
+
 <a href="{{ route('flights.create') }}">Create New Flight</a>
 
-@if(session('success')) <p>{{ session('success') }}</p> @endif
+@if(session('success')) 
+    <p>{{ session('success') }}</p> 
+@endif
 
 <table border="1">
     <thead>
@@ -46,3 +52,7 @@
     </tbody>
 </table>
 
+<!-- Pagination links -->
+<div>
+    {{ $flights->appends(['search' => request('search'), 'per_page' => request('per_page')])->links() }}
+</div>

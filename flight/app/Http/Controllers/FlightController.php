@@ -8,19 +8,24 @@ use Illuminate\Http\Request;
 
 class FlightController extends Controller
 {
+   
+   
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $perPage = $request->query('per_page', 10); 
+    
         $flights = Flight::when($search, function ($query, $search) {
                 return $query->where('number', 'like', "%{$search}%")
                              ->orWhere('departure_city', 'like', "%{$search}%")
                              ->orWhere('arrival_city', 'like', "%{$search}%");
             })
             ->withTrashed()
-            ->get();
-
-        return view('flights.index', compact('flights', 'search'));
+            ->paginate($perPage);
+    
+        return view('flights.index', compact('flights', 'search', 'perPage'));
     }
+    
 
     public function create()
     {
@@ -36,7 +41,6 @@ class FlightController extends Controller
             'departure_time' => 'required|date',
             'arrival_time' => 'required|date|after:departure_time',
             'available_seats' => 'required|integer|min:0',
-
         ]);
 
         Flight::create($request->all());
@@ -58,7 +62,6 @@ class FlightController extends Controller
             'departure_time' => 'required|date',
             'arrival_time' => 'required|date|after:departure_time',
             'available_seats' => 'required|integer|min:0',
-
         ]);
 
         $flight->update($request->all());
@@ -84,6 +87,7 @@ class FlightController extends Controller
         $passengers = $flight->passengers; 
         return view('flights.passengers', compact('passengers', 'flight'));
     }
+
     public function removePassenger(Flight $flight, Passenger $passenger)
     {
         $flight->passengers()->detach($passenger->id);
