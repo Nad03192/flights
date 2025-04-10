@@ -26,4 +26,8 @@ class Passenger extends Model
     return $this->belongsToMany(Flight::class);
 }
 
+public function roles()
+{
+    return $this->belongsToMany(Role::class, 'passenger_role');
+}
 }

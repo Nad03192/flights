@@ -21,6 +21,8 @@
         <input type="email" name="email" placeholder="Email" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <input type="password" name="password_confirmation" placeholder="Confirm Password" required><br>
+        <input type="date" name="dob" placeholder="Date of Birth" required><br> <!-- DOB Field -->
+        <input type="date" name="passport_expiry_date" placeholder="Passport Expiry Date" required><br> <!-- Passport Expiry Date Field -->
         <button type="submit">Register</button>
     </form>
 

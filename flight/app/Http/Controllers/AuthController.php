@@ -17,22 +17,27 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'first_name' => 'required',
-            'last_name'  => 'required',
-            'email'      => 'required|email|unique:passengers,email',
-            'password'   => 'required|confirmed|min:6',
+            'first_name'        => 'required',
+            'last_name'         => 'required',
+            'email'             => 'required|email|unique:passengers,email',
+            'password'          => 'required|confirmed|min:6',
+            'dob'               => 'required|date',  
+            'passport_expiry_date' => 'required|date', 
         ]);
-
+    
         $passenger = Passenger::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'password'   => Hash::make($request->password),
+            'first_name'        => $request->first_name,
+            'last_name'         => $request->last_name,
+            'email'             => $request->email,
+            'password'          => Hash::make($request->password),
+            'dob'               => $request->dob,  
+            'passport_expiry_date' => $request->passport_expiry_date, 
         ]);
-
+    
         session(['passenger_id' => $passenger->id]);
-        return redirect()->route('flights.list');
+        return redirect()->route('flights.list'); 
     }
+    
 
     public function showLoginForm()
     {
@@ -45,16 +50,28 @@ class AuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-
+    
+        // Find the passenger by email
         $passenger = Passenger::where('email', $request->email)->first();
-
+    
         if ($passenger && Hash::check($request->password, $passenger->password)) {
+            // Check if the passenger has the admin role
+            $isAdmin = $passenger->roles()->where('name', 'admin')->exists();
+    
+            // If admin, redirect to the admin flight index page
+            if ($isAdmin) {
+                session(['passenger_id' => $passenger->id]);
+                return redirect()->route('flights.index');  // Change to flights.index for admin
+            }
+    
+            // For non-admin users, proceed to flights list
             session(['passenger_id' => $passenger->id]);
             return redirect()->route('flights.list');
         }
-
+    
         return back()->withErrors(['email' => 'Invalid credentials']);
     }
+    
 
     public function logout()
     {
