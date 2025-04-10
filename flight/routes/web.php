@@ -20,7 +20,6 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('flights/{flight}/passengers', [FlightController::class, 'showPassengers'])->name('flights.passengers');
 });
 
-
 Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -31,5 +30,3 @@ Route::get('flightslist', [AuthController::class, 'listFlights'])->name('flights
 Route::post('flights/{id}/book', [AuthController::class, 'bookFlight'])->name('flights.book');
 Route::delete('/flights/{flight}/passengers/{passenger}', [FlightController::class, 'removePassenger'])->name('flights.passengers.remove');
 Route::get('/passenger/flights', [AuthController::class, 'showFlightsForPassenger'])->name('passenger.flights');
-
-

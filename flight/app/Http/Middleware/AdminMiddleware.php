@@ -4,21 +4,17 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Passenger;
 
 class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-     
         $passengerId = session('passenger_id');
         
         if ($passengerId) {
-       
             $passenger = Passenger::find($passengerId);
 
-           
             if ($passenger && $passenger->roles()->where('name', 'admin')->exists()) {
                 return $next($request); 
             }
