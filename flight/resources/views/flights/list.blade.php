@@ -8,6 +8,7 @@
     <form method="GET">
     <input type="text" name="search" placeholder="Search flights..." value="{{ $search ?? '' }}">
     <button type="submit">Search</button>
+    <a href="{{ route('passenger.flights') }}" class="btn btn-primary">View My Booked Flights</a>
 </form>
 
 

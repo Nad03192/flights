@@ -81,7 +81,12 @@ class FlightController extends Controller
 
     public function showPassengers(Flight $flight)
     {
-        $passengers = $flight->passengers;
-        return view('passengers.index', compact('passengers'));
+        $passengers = $flight->passengers; 
+        return view('flights.passengers', compact('passengers', 'flight'));
+    }
+    public function removePassenger(Flight $flight, Passenger $passenger)
+    {
+        $flight->passengers()->detach($passenger->id);
+        return back()->with('success', 'Passenger removed from flight.');
     }
 }

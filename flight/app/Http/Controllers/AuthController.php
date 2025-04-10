@@ -76,21 +76,43 @@ class AuthController extends Controller
         return view('flights.list', compact('flights'));
     }
     
+// app/Http/Controllers/AuthController.php
 
-    public function bookFlight($flightId)
-    {
-        $passengerId = session('passenger_id');
+public function bookFlight($flightId)
+{
+    $passengerId = session('passenger_id'); 
 
-        $flight = Flight::withCount('passengers')->findOrFail($flightId);
+    $flight = Flight::withCount('passengers')->findOrFail($flightId);
 
-        if ($flight->passengers_count >= $flight->available_seats) {
-            return back()->withErrors(['error' => 'Flight is fully booked']);
-        }
+    $alreadyBooked = $flight->passengers()->where('passenger_id', $passengerId)->exists();
 
-        $flight->passengers()->attach($passengerId);
-
-        return back()->with('success', 'Flight booked successfully!');
+    if ($alreadyBooked) {
+        return back()->withErrors(['error' => 'You have already booked this flight.']);
     }
+
+    if ($flight->passengers_count >= $flight->available_seats) {
+        return back()->withErrors(['error' => 'Flight is fully booked']);
+    }
+
+    $flight->passengers()->attach($passengerId);
+
+    return back()->with('success', 'Flight booked successfully!');
+}
+
+public function showFlightsForPassenger()
+{
+    $passengerId = session('passenger_id'); // Retrieve the passenger ID from the session
+
+    // Find the passenger with the associated flights
+    $passenger = Passenger::with('flights')->findOrFail($passengerId);
+
+    // Pass the flights to the view
+    $flights = $passenger->flights;
+
+    return view('flights.passenger_flights', compact('flights', 'passenger'));
+}
+
+
 }
 
 
