@@ -75,8 +75,7 @@ class AuthController extends Controller
     
         return view('flights.list', compact('flights'));
     }
-    
-// app/Http/Controllers/AuthController.php
+
 
 public function bookFlight($flightId)
 {
@@ -101,12 +100,11 @@ public function bookFlight($flightId)
 
 public function showFlightsForPassenger()
 {
-    $passengerId = session('passenger_id'); // Retrieve the passenger ID from the session
+    $passengerId = session('passenger_id'); 
 
-    // Find the passenger with the associated flights
     $passenger = Passenger::with('flights')->findOrFail($passengerId);
 
-    // Pass the flights to the view
+ 
     $flights = $passenger->flights;
 
     return view('flights.passenger_flights', compact('flights', 'passenger'));
