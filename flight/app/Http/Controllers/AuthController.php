@@ -61,13 +61,21 @@ class AuthController extends Controller
         session()->forget('passenger_id');
         return redirect()->route('login.form');
     }
-
-    public function listFlights()
+    public function listFlights(Request $request)
     {
-        $flights = Flight::withCount('passengers')->get();
-
+        $query = Flight::withCount('passengers');
+    
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('number', 'like', '%' . $request->search . '%')
+                  ->orWhere('departure_city', 'like', '%' . $request->search . '%')
+                  ->orWhere('arrival_city', 'like', '%' . $request->search . '%');
+        }
+    
+        $flights = $query->get();
+    
         return view('flights.list', compact('flights'));
     }
+    
 
     public function bookFlight($flightId)
     {

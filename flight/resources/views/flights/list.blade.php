@@ -5,6 +5,11 @@
 </head>
 <body>
     <h2>Flights</h2>
+    <form method="GET">
+    <input type="text" name="search" placeholder="Search flights..." value="{{ $search ?? '' }}">
+    <button type="submit">Search</button>
+</form>
+
 
     <p><a href="{{ route('logout') }}">Logout</a></p>
 
