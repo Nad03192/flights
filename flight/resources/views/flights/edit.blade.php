@@ -30,6 +30,8 @@
 
         <label for="arrival_time">Arrival Time:</label>
         <input type="datetime-local" name="arrival_time" value="{{ old('arrival_time', \Carbon\Carbon::parse($flight->arrival_time)->format('Y-m-d\TH:i')) }}" required><br><br>
+        <label for="available_seats">Available Seats:</label>
+<input type="number" name="available_seats" value="{{ old('available_seats', $flight->available_seats ?? '') }}" min="0" required><br><br>
 
         <button type="submit">Update Flight</button>
     </form>

@@ -35,6 +35,8 @@ class FlightController extends Controller
             'arrival_city' => 'required|string',
             'departure_time' => 'required|date',
             'arrival_time' => 'required|date|after:departure_time',
+            'available_seats' => 'required|integer|min:0',
+
         ]);
 
         Flight::create($request->all());
@@ -55,6 +57,8 @@ class FlightController extends Controller
             'arrival_city' => 'required|string',
             'departure_time' => 'required|date',
             'arrival_time' => 'required|date|after:departure_time',
+            'available_seats' => 'required|integer|min:0',
+
         ]);
 
         $flight->update($request->all());
