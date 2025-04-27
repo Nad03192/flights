@@ -10,9 +10,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::middleware([AdminMiddleware::class])->group(function () {
 Route::put('passengers/restore/{id}', [PassengerController::class, 'restore'])->name('passengers.restore');
 Route::get('passengers/search', [PassengerController::class, 'search'])->name('passengers.search');
 Route::resource('passengers', PassengerController::class);
+});
 
 Route::middleware([AdminMiddleware::class])->group(function () {
     Route::resource('flights', FlightController::class);
