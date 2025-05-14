@@ -16,6 +16,7 @@ class Flight extends Model
         'departure_time',
         'arrival_time',
         'available_seats',
+      
     ];
 
     public function passengers()

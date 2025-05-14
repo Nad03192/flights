@@ -3,6 +3,7 @@
     @if(isset($flight)) @method('PUT') @endif
 
     <input type="text" name="number" placeholder="Flight Number" value="{{ old('number', $flight->number ?? '') }}">
+    <input type="text" name="class" placeholder="class" value="{{ old('class', $flight->class ?? '') }}">
     <input type="text" name="departure_city" placeholder="Departure City" value="{{ old('departure_city', $flight->departure_city ?? '') }}">
     <input type="text" name="arrival_city" placeholder="Arrival City" value="{{ old('arrival_city', $flight->arrival_city ?? '') }}">
     <input type="datetime-local" name="departure_time" value="{{ old('departure_time', isset($flight) ? \Carbon\Carbon::parse($flight->departure_time)->format('Y-m-d\TH:i') : '') }}">

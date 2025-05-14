@@ -23,6 +23,7 @@
             <th>Number</th>
             <th>Departure</th>
             <th>Arrival</th>
+            <th>class</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -32,6 +33,7 @@
                 <td>{{ $flight->number }}</td>
                 <td>{{ $flight->departure_city }}</td>
                 <td>{{ $flight->arrival_city }}</td>
+                <td>{{ $flight->class }}</td>
                 <td>
                     <a href="{{ route('flights.edit', $flight->id) }}">Edit</a> |
                     <a href="{{ route('flights.passengers', $flight->id) }}">Passengers</a> |

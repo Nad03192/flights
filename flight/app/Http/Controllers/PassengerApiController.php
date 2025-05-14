@@ -7,10 +7,33 @@ use Illuminate\Http\Request;
 
 class PassengerApiController extends Controller
 {
-    public function index()
-    {
-        return Passenger::all();
+public function index(Request $request)
+{
+    $query = Passenger::query();
+
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('first_name', 'LIKE', "%$search%")
+              ->orWhere('last_name', 'LIKE', "%$search%")
+              ->orWhere('email', 'LIKE', "%$search%");
+        });
     }
+      if ($request->has('id')) {
+        $query->where('id', $request->id);
+    }
+
+    
+    $sortBy = $request->get('sort_by', 'id'); 
+    $sortDir = $request->get('sort_dir', 'asc'); 
+    $query->orderBy($sortBy, $sortDir);
+
+    $perPage = $request->get('per_page', 10); 
+    $passengers = $query->paginate($perPage);
+
+    return response()->json($passengers);
+}
+
 
     public function store(Request $request)
     {
@@ -23,7 +46,7 @@ class PassengerApiController extends Controller
             'passport_expiry_date' => 'required|date',
         ]);
 
-        $validated['password'] = bcrypt($validated['password']); // hash password
+        $validated['password'] = bcrypt($validated['password']); 
 
         $passenger = Passenger::create($validated);
 

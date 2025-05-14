@@ -19,6 +19,7 @@ class FlightController extends Controller
                 return $query->where('number', 'like', "%{$search}%")
                              ->orWhere('departure_city', 'like', "%{$search}%")
                              ->orWhere('arrival_city', 'like', "%{$search}%");
+                     
             })
             ->withTrashed()
             ->paginate($perPage);
@@ -41,6 +42,7 @@ class FlightController extends Controller
             'departure_time' => 'required|date',
             'arrival_time' => 'required|date|after:departure_time',
             'available_seats' => 'required|integer|min:0',
+            
         ]);
 
         Flight::create($request->all());

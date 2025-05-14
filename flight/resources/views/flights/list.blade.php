@@ -4,7 +4,7 @@
     <title>Available Flights</title>
 </head>
 <body>
-    <h2>Flights</h2>
+    <h2>Flights list</h2>
     <form method="GET">
     <input type="text" name="search" placeholder="Search flights..." value="{{ $search ?? '' }}">
     <button type="submit">Search</button>
@@ -25,11 +25,13 @@
     <table border="1" cellpadding="10">
         <tr>
             <th>Flight Number</th>
+            <th>class</th>
             <th>From</th>
             <th>To</th>
             <th>Departure</th>
             <th>Arrival</th>
             <th>Seats</th>
+        
             <th>Status</th>
             <th>Action</th>
         </tr>
@@ -37,10 +39,12 @@
         @foreach ($flights as $flight)
             <tr>
                 <td>{{ $flight->number }}</td>
+                <td>{{ $flight->class }}</td>
                 <td>{{ $flight->departure_city }}</td>
                 <td>{{ $flight->arrival_city }}</td>
                 <td>{{ $flight->departure_time }}</td>
                 <td>{{ $flight->arrival_time }}</td>
+                
                 <td>{{ $flight->passengers_count }} / {{ $flight->available_seats }}</td>
                 <td>
                     @if ($flight->passengers_count >= $flight->available_seats)

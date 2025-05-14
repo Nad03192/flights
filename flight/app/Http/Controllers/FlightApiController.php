@@ -7,14 +7,29 @@ use Illuminate\Http\Request;
 
 class FlightApiController extends Controller
 {
-    // List all flights
-    public function index()
-    {
-        $flights = Flight::all();
-        return response()->json($flights);
-    }
+    
+   public function index(Request $request)
+{
+    $search = $request->get('search');
+    $sortBy = $request->get('sort_by', 'number'); 
+    $sortOrder = $request->get('sort_order', 'asc'); 
+    $perPage = $request->get('per_page', 10); 
 
-    // Create a new flight
+    $flights = Flight::withCount('passengers')
+        ->when($search, function ($query) use ($search) {
+            $query->where('number', 'like', "%$search%")
+                  ->orWhere('departure_city', 'like', "%$search%")
+                  ->orWhere('arrival_city', 'like', "%$search%");
+        })
+        ->orderBy($sortBy, $sortOrder)
+        ->paginate($perPage);
+
+    return response()->json([
+        'success' => true,
+        'data' => $flights
+    ]);
+}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,14 +46,17 @@ class FlightApiController extends Controller
         return response()->json($flight, 201);
     }
 
-    // Show a specific flight
-    public function show(string $id)
-    {
-        $flight = Flight::findOrFail($id);
+    public function show(Flight $flight)
+{
+    if ($flight) {
         return response()->json($flight);
+    } else {
+        return response()->json(['message' => 'Flight not found'], 404);
     }
+}
 
-    // Update an existing flight
+
+
     public function update(Request $request, string $id)
     {
         $flight = Flight::findOrFail($id);
@@ -57,7 +75,7 @@ class FlightApiController extends Controller
         return response()->json($flight);
     }
 
-    // Soft delete a flight
+   
     public function destroy(string $id)
     {
         $flight = Flight::findOrFail($id);
