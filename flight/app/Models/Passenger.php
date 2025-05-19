@@ -12,7 +12,7 @@ class Passenger extends Model
 
 
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'dob', 'passport_expiry_date'
+        'first_name', 'last_name', 'email', 'password', 'dob', 'passport_expiry_date','image'
     ];
 
     protected $hidden = [
@@ -21,6 +21,12 @@ class Passenger extends Model
 
 
     protected $dates = ['deleted_at'];
+    protected $appends = ['image_url'];
+
+public function getImageUrlAttribute()
+{
+    return $this->image ? asset('storage/' . $this->image) : null;
+}
     public function flights()
 {
     return $this->belongsToMany(Flight::class);
