@@ -18,6 +18,7 @@ class Passenger extends Model
     protected $hidden = [
         'password',
     ];
+    protected $guarded = ['id'];
 
 
     protected $dates = ['deleted_at'];

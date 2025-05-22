@@ -4,32 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Flight;
 use Illuminate\Http\Request;
-use App\Exports\FlightsExport;
-use Maatwebsite\Excel\Facades\Excel;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
+
 class FlightApiController extends Controller
 {
-    
-   public function index(Request $request)
-{
-    $search = $request->get('search');
-    $sortBy = $request->get('sort_by', 'number'); 
-    $sortOrder = $request->get('sort_order', 'asc'); 
-    $perPage = $request->get('per_page', 10); 
+    public function index(Request $request)
+    {
+        $perPage = $request->get('per_page', 10);
 
-    $flights = Flight::withCount('passengers')
-        ->when($search, function ($query) use ($search) {
-            $query->where('number', 'like', "%$search%")
-                  ->orWhere('departure_city', 'like', "%$search%")
-                  ->orWhere('arrival_city', 'like', "%$search%");
-        })
-        ->orderBy($sortBy, $sortOrder)
-        ->paginate($perPage);
+        $flights = QueryBuilder::for(Flight::withCount('passengers'))
+            ->allowedFilters([
+                AllowedFilter::partial('number'),
+                AllowedFilter::partial('departure_city'),
+                AllowedFilter::partial('arrival_city'),
+            ])
+            ->allowedSorts(['number', 'departure_city', 'arrival_city', 'departure_time', 'arrival_time', 'available_seats'])
+            ->paginate($perPage)
+            ->appends($request->query());
 
-    return response()->json([
-        'success' => true,
-        'data' => $flights
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'data' => $flights
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -44,24 +42,22 @@ class FlightApiController extends Controller
 
         $flight = Flight::create($validated);
 
-        return response()->json($flight, 201);
+        return response()->json([
+            'success' => true,
+            'data' => $flight
+        ], 201);
     }
 
     public function show(Flight $flight)
-{
-    if ($flight) {
-        return response()->json($flight);
-    } else {
-        return response()->json(['message' => 'Flight not found'], 404);
-    }
-}
-
-
-
-    public function update(Request $request, string $id)
     {
-        $flight = Flight::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'data' => $flight
+        ]);
+    }
 
+    public function update(Request $request, Flight $flight)
+    {
         $validated = $request->validate([
             'number' => 'sometimes|string|max:255',
             'departure_city' => 'sometimes|string|max:255',
@@ -73,51 +69,19 @@ class FlightApiController extends Controller
 
         $flight->update($validated);
 
-        return response()->json($flight);
+        return response()->json([
+            'success' => true,
+            'data' => $flight
+        ]);
     }
 
-   
-    public function destroy(string $id)
+    public function destroy(Flight $flight)
     {
-        $flight = Flight::findOrFail($id);
         $flight->delete();
 
-        return response()->json(['message' => 'Flight deleted successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Flight deleted successfully.'
+        ]);
     }
-public function export()
-{
-    $flights = Flight::all();
-
-    $filename = "flights_export_" . date('Y-m-d_H-i-s') . ".csv";
-
-    $headers = [
-        "Content-type" => "text/csv",
-        "Content-Disposition" => "attachment; filename=$filename",
-        "Pragma" => "no-cache",
-        "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-        "Expires" => "0"
-    ];
-
-    $columns = ['Number', 'Departure City', 'Arrival City', 'Departure Time', 'Arrival Time', 'Available Seats'];
-
-    $callback = function() use ($flights, $columns) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, $columns);
-
-        foreach ($flights as $flight) {
-            fputcsv($file, [
-                $flight->number,
-                $flight->departure_city,
-                $flight->arrival_city,
-                $flight->departure_time,
-                $flight->arrival_time,
-                $flight->available_seats
-            ]);
-        }
-        fclose($file);
-    };
-
-    return response()->stream($callback, 200, $headers);
-}
-
 }

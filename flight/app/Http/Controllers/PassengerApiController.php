@@ -5,34 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Passenger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class PassengerApiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Passenger::query();
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'LIKE', "%$search%")
-                    ->orWhere('last_name', 'LIKE', "%$search%")
-                    ->orWhere('email', 'LIKE', "%$search%");
-            });
-        }
-
-        if ($request->has('id')) {
-            $query->where('id', $request->id);
-        }
-
-        $sortBy = $request->get('sort_by', 'id');
-        $sortDir = $request->get('sort_dir', 'asc');
-        $query->orderBy($sortBy, $sortDir);
-
         $perPage = $request->get('per_page', 10);
-        $passengers = $query->paginate($perPage);
 
-        return response()->json($passengers);
+        $passengers = QueryBuilder::for(Passenger::class)
+            ->allowedFilters([
+                AllowedFilter::partial('first_name'),
+                AllowedFilter::partial('last_name'),
+                AllowedFilter::partial('email'),
+                AllowedFilter::exact('flight_id'), 
+            ])
+            ->allowedSorts(['flight_id', 'first_name', 'last_name', 'email', 'dob', 'passport_expiry_date'])
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        return response()->json([
+            'success' => true,
+            'data' => $passengers
+        ]);
     }
 
     public function store(Request $request)
@@ -44,7 +40,7 @@ class PassengerApiController extends Controller
             'password' => 'required|string|min:6',
             'dob' => 'required|date',
             'passport_expiry_date' => 'required|date',
-            'image' => 'nullable|image|max:2048', // optional image
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -55,17 +51,24 @@ class PassengerApiController extends Controller
 
         $passenger = Passenger::create($validated);
 
-        return response()->json($passenger, 201);
+        return response()->json([
+            'success' => true,
+            'data' => $passenger
+        ], 201);
     }
 
-    public function show(Passenger $passenger)
+      public function show(Passenger $passenger)
     {
-        return response()->json($passenger);
+        return response()->json([
+            'success' => true,
+            'data' => $passenger
+        ]);
     }
 
     public function update(Request $request, Passenger $passenger)
     {
         $validated = $request->validate([
+            'flight_id' => 'sometimes|exists:flights,id', 
             'first_name' => 'sometimes|string',
             'last_name' => 'sometimes|string',
             'email' => 'sometimes|email|unique:passengers,email,' . $passenger->id,
@@ -88,7 +91,10 @@ class PassengerApiController extends Controller
 
         $passenger->update($validated);
 
-        return response()->json($passenger);
+        return response()->json([
+            'success' => true,
+            'data' => $passenger
+        ]);
     }
 
     public function destroy(Passenger $passenger)
@@ -99,43 +105,9 @@ class PassengerApiController extends Controller
 
         $passenger->delete();
 
-        return response()->json(null, 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Passenger deleted successfully.'
+        ]);
     }
-    public function export()
-{
-    $passengers = Passenger::all();
-
-    $filename = "passengers_export_" . date('Y-m-d_H-i-s') . ".csv";
-
-    $headers = [
-        "Content-Type" => "text/csv",
-        "Content-Disposition" => "attachment; filename=\"$filename\"",
-        "Pragma" => "no-cache",
-        "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-        "Expires" => "0"
-    ];
-
-    $columns = ['ID', 'First Name', 'Last Name', 'Email', 'Date of Birth', 'Passport Expiry Date'];
-
-    $callback = function() use ($passengers, $columns) {
-        $file = fopen('php://output', 'w');
-        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); 
-        fputcsv($file, $columns);
-
-        foreach ($passengers as $p) {
-            fputcsv($file, [
-                $p->id,
-                $p->first_name,
-                $p->last_name,
-                $p->email,
-                $p->dob,
-                $p->passport_expiry_date
-            ]);
-        }
-        fclose($file);
-    };
-
-    return response()->stream($callback, 200, $headers);
-}
-
 }

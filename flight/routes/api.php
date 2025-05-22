@@ -3,13 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlightApiController;
+use App\Http\Controllers\FlightExport;
 use App\Http\Controllers\PassengerApiController;
+use App\Http\Controllers\PassengerExport;
 use App\Http\Controllers\AuthApiController;
 
 Route::middleware('security.headers')->group(function () {
 
-    Route::get('flights/export', [FlightApiController::class, 'export']);
-    Route::get('/passengers/export', [PassengerApiController::class, 'export']);
+    Route::get('flights/export', [FlightExport::class, 'export']);
+    Route::get('/passengers/export', [PassengerExport::class, 'export']);
 
     Route::post('register', [AuthApiController::class, 'register']);
     Route::post('login', [AuthApiController::class, 'login']);
