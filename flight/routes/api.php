@@ -1,32 +1,30 @@
 <?php
 
+use App\Http\Controllers\Admin\FlightController;
+use App\Http\Controllers\Admin\FlightExportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlightApiController;
 use App\Http\Controllers\FlightExport;
-use App\Http\Controllers\PassengerApiController;
+use App\Http\Controllers\Admin\PassengerController;
+use App\Http\Controllers\Admin\PassengerExportController;
+use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\PassengerExport;
 use App\Http\Controllers\AuthApiController;
+use Illuminate\Contracts\Session\Session;
 
 Route::middleware('security.headers')->group(function () {
 
-    Route::get('flights/export', [FlightExport::class, 'export']);
-    Route::get('/passengers/export', [PassengerExport::class, 'export']);
+    Route::post('register', [SessionController::class, 'register']);
+    Route::post('login', [SessionController::class, 'login']);
+    Route::middleware('auth:sanctum')->post('logout', [SessionController::class, 'logout']);
 
-    Route::post('register', [AuthApiController::class, 'register']);
-    Route::post('login', [AuthApiController::class, 'login']);
-    Route::middleware('auth:sanctum')->post('logout', [AuthApiController::class, 'logout']);
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+        Route::get('/passengers/export', [PassengerExportController::class, 'export']);
+        Route::apiResource('passengers', PassengerController::class);
 
-    Route::apiResource('passengers', PassengerApiController::class);
-    Route::apiResource('flights', FlightApiController::class);
 
-    Route::middleware(['auth:sanctum', 'role:admin'])->get('/admin', function () {
-        return response()->json(['message' => 'Welcome Admin!']);
+        Route::get('flights/export', [FlightExportController::class, 'export']);
+        Route::apiResource('flights', FlightController::class);
     });
-
-    // Any other routes with security.headers
-    Route::get('/adminss', function () {
-        return 'Admin page with security headers';
-    });
-
 });

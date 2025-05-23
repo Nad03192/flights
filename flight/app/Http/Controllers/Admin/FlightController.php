@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use App\Models\Flight;
-use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
-class FlightApiController extends Controller
+class FlightController extends Controller
 {
+
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 10);
@@ -84,4 +87,5 @@ class FlightApiController extends Controller
             'message' => 'Flight deleted successfully.'
         ]);
     }
+
 }

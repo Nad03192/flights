@@ -19,10 +19,12 @@ return new class extends Migration
             $table->string('password');
             $table->date('dob');
             $table->date('passport_expiry_date');
+            $table->string('image')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
-    
+
 
     /**
      * Reverse the migrations.

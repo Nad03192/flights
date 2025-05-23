@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Passenger;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Passenger;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-
-class PassengerApiController extends Controller
+class PassengerController extends Controller
 {
     public function index(Request $request)
     {

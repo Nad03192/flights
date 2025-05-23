@@ -18,12 +18,13 @@ return new class extends Migration
             $table->string('arrival_city');
             $table->timestamp('departure_time')->nullable();
             $table->timestamp('arrival_time')->nullable();
+            $table->integer('available_seats')->default(500);
+            $table->softDeletes();
             $table->timestamps();
         });
-        
     }
-    
-    
+
+
     /**
      * Reverse the migrations.
      */
