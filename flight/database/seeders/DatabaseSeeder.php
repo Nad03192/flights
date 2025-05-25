@@ -3,12 +3,15 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Passenger; // ✅ Add this line
+use Database\Seeders\PassengerSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        $this->call(FlightPassengerSeeder::class);
+        $this->call([
+            PassengerSeeder::class, // Call the PassengerSeeder
+        ]);
+         $this->call(RoleSeeder::class);
     }
 }

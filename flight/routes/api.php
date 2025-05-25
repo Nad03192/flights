@@ -1,33 +1,29 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\AdminManagement;
+use App\Http\Controllers\Admin\FlightController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FlightApiController;
-use App\Http\Controllers\PassengerApiController;
+use App\Http\Controllers\Admin\PassengerController;
+use App\Http\Controllers\Admin\PassengerExportController;
+use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\Admin\PassengerImageController;
 
-// Already exists
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware(['throttle:3,1', 'security.headers'])->group(function () {
+    Route::post('register', [SessionController::class, 'register']);
+    Route::post('login', [SessionController::class, 'login']);
+    Route::middleware('auth:sanctum')->post('logout', [SessionController::class, 'logout']);
 
-// =======================
-// FLIGHT API Routes
-// =======================
-Route::prefix('flights')->group(function () {
-    Route::get('/', [FlightApiController::class, 'index']);         // Get all flights
-    Route::post('/', [FlightApiController::class, 'store']);        // Create new flight
-    Route::get('/{id}', [FlightApiController::class, 'show']);      // Get flight by id
-    Route::put('/{id}', [FlightApiController::class, 'update']);    // Update flight
-    Route::delete('/{id}', [FlightApiController::class, 'destroy']); // Delete flight
-});
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+        Route::get('passengers/export', [PassengerExportController::class, 'export']);
+        Route::apiResource('admin/users', AdminManagement::class);
+        Route::apiResource('passengers', PassengerController::class);
+        Route::post('passengers/{passenger}/image', [PassengerImageController::class, 'store']);
+        Route::delete('passengers/{passenger}/image', [PassengerImageController::class, 'destroy']);
+        Route::apiResource('flights', FlightController::class);
+    });
 
-// =======================
-// PASSENGER API Routes
-// =======================
-Route::prefix('passengers')->group(function () {
-    Route::get('/', [PassengerApiController::class, 'index']);         // Get all passengers
-    Route::post('/', [PassengerApiController::class, 'store']);        // Create new passenger
-    Route::get('/{id}', [PassengerApiController::class, 'show']);      // Get passenger by id
-    Route::put('/{id}', [PassengerApiController::class, 'update']);    // Update passenger
-    Route::delete('/{id}', [PassengerApiController::class, 'destroy']); // Delete passenger
+    Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+        Route::get('user/flights', [FlightController::class, 'index']);
+        Route::get('user/flights/{flight}', [FlightController::class, 'show']);
+    });
 });

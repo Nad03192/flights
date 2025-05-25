@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Mail;
+
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Bus\Queueable;
@@ -23,6 +24,6 @@ class FlightReminderMail extends Mailable
     public function build()
     {
         return $this->subject('Reminder: Your flight is in 24 hours')
-                    ->view('emails.flight_reminder');
+            ->view('emails.flight_reminder');
     }
 }

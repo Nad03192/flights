@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-  
+
     protected $fillable = ['name'];
 
     public function passengers()
     {
         return $this->belongsToMany(Passenger::class, 'passenger_role');
     }
-
 }

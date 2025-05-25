@@ -29,4 +29,3 @@ class SendFlightReminders extends Command
         return 0;
     }
 }
-
