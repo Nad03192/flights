@@ -38,7 +38,7 @@ trait Auditable
                 'user_id'        => Auth::id(),
                 'old_values'     => null,
                 'new_values'     => json_encode($model->getAttributes()),
-                'ip_address'     => Request::ip(),
+           
             ]);
         });
 
@@ -50,7 +50,7 @@ trait Auditable
                 'user_id'        => Auth::id(),
                 'old_values'     => json_encode($model->getOriginal()),
                 'new_values'     => null,
-                'ip_address'     => Request::ip(),
+        
             ]);
         });
     }
