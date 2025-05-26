@@ -11,8 +11,9 @@ class PassengersExport implements FromArray
     {
         $passengers = Passenger::all();
 
+        
         $data = [
-            ['First Name', 'Last Name', 'Email', 'Image URL'],
+            ['First Name', 'Last Name', 'Email', 'Image URL', 'Thumbnail', 'Date of Birth', 'Passport Expiry Date'],
         ];
 
         foreach ($passengers as $passenger) {
@@ -20,7 +21,10 @@ class PassengersExport implements FromArray
                 $passenger->first_name ?? '',
                 $passenger->last_name ?? '',
                 $passenger->email ?? '',
-                $passenger->image_url ?? '',
+                $passenger->image ?? '',
+                $passenger->thumbnail ?? '',
+                $passenger->dob ?? '',
+                $passenger->passport_expiry_date ?? '',
             ];
         }
 
