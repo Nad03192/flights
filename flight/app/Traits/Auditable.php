@@ -14,7 +14,7 @@ trait Auditable
             $original = $model->getOriginal();
             $changes = $model->getDirty();
 
-            // If there are no actual changes, skip
+            
             if (empty($changes)) {
                 return;
             }

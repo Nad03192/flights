@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\PassengerController;
 use App\Http\Controllers\Admin\PassengerExportController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Admin\PassengerImageController;
+use App\Http\Controllers\Admin\PassengerImportController;
+
+
 
 Route::middleware(['throttle:3,1', 'security.headers'])->group(function () {
     Route::post('register', [SessionController::class, 'register']);
@@ -15,6 +18,7 @@ Route::middleware(['throttle:3,1', 'security.headers'])->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::get('passengers/export', [PassengerExportController::class, 'export']);
+        Route::post('/passengers/import', [PassengerImportController::class, 'import']);
         Route::apiResource('admin/users', AdminManagement::class);
         Route::apiResource('passengers', PassengerController::class);
         Route::post('passengers/{passenger}/image', [PassengerImageController::class, 'store']);
