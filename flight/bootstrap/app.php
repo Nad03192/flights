@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,13 +13,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-           $middleware->alias([
+        $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-                  'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
+            'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
         ]);
     })
-    
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        // Runs the flight reminder command every hour
+        $schedule->command('reminders:flights')->hourly();
+    })
+    ->create();
+
   
