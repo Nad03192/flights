@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Flight extends Model
+class Flight extends Model implements AuditableContract
 {
     use Auditable;
     use SoftDeletes;
